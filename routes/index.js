@@ -2,6 +2,7 @@ var http = require('request');
 var cors = require('cors');
 var uuid = require('uuid');
 var url = require('url');
+var moment = require('moment');
 
 // This is the heart of your HipChat Connect add-on. For more information,
 // take a look at https://developer.atlassian.com/hipchat/tutorials/getting-started-with-atlassian-connect-express-node-js
@@ -79,13 +80,60 @@ module.exports = function (app, addon) {
   app.post('/webhook',
     addon.authenticate(),
     function (req, res) {
-      hipchat.sendMessage(req.clientInfo, req.identity.roomId, 'pong')
+      const results = req.body.item.message.message.match(/([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]/g);
+      if (!results || !results.length) {
+        return res.sendStatus(200);
+      }
+      results.map((result, index) => {
+        //const tzs = moment.tz.names();
+        const resultString = ''
+        const splittedResult = result.split(':')
+        const now = moment().tz(req.context.user_tz).hour(splittedResult[0]).minute(splittedResult[1]);
+        addon.settings.get('world-time-converter', req.clientKey).then((selectedTzsString) => {
+          const selecteTzs = JSON.parse(selectedTzsString);
+          if (!selecteTzs) {
+            return
+          }
+          selecteTzs.map((tz, tzIndex) => {
+            if (tz === req.context.user_tz) {
+              return
+            }
+            const offset = moment.tz.zone(tz).offset(now)
+            let differenceString = createDifferenceString(now, timeZonedString, offset)
+            resultString += `${tz}: ${differenceString}`
+          })
+          
+        })
+        hipchat.sendMessage(req.clientInfo, req.identity.roomId, JSON.stringify(now.format()))
         .then(function (data) {
           res.sendStatus(200);
         });
+      })
+      //TODO: Match body.item.message.message to time regex
+      //TODO: get times for configured timezones relative to req.context.user_tz
+      
     }
     );
 
+    function createDifferenceString(now, offset) {
+      let result = ''
+      const timeZoned = moment(now).add(offset, 'm')
+      if (now.isBefore(timeZoned, "d")) {
+        result += '(+1) '
+      }
+      if (now.isAfter(timeZoned, 'd')) {
+        result += '(-1) '
+      }
+
+      result += timeZoned.format('HH:mm')
+      const offsetInHours = offset / 60
+      if (offsetInHours >= 0) {
+        result += `(+${offsetInHours} h)`
+      } else {
+        result += `(${offsetInHours} h)`
+      }
+      return result;
+    }
   // Notify the room that the add-on was installed. To learn more about
   // Connect's install flow, check out:
   // https://developer.atlassian.com/hipchat/guide/installation-flow
