@@ -75,6 +75,22 @@ module.exports = function (app, addon) {
     }
     );
 
+    app.get('/selectedtzs',
+    addon.authenticate(),
+    function (req, res) {
+      addon.settings.get('world-time-converter', req.clientKey).then((tzs) => {
+        res.json(tzs)
+      })
+    })
+
+    app.get('/selectedtzs',
+    addon.authenticate(),
+    function (req, res) {
+      addon.settings.set('world-time-converter', req.body, req.clientKey).then(() => {
+        res.sendStatus(200)
+      })
+    })
+
   // This is an example route to handle an incoming webhook
   // https://developer.atlassian.com/hipchat/guide/webhooks
   app.post('/webhook',
@@ -84,6 +100,7 @@ module.exports = function (app, addon) {
       if (!results || !results.length) {
         return res.sendStatus(200);
       }
+      const promises = []
       results.map((result, index) => {
         //const tzs = moment.tz.names();
         const resultString = ''
@@ -100,18 +117,14 @@ module.exports = function (app, addon) {
             }
             const offset = moment.tz.zone(tz).offset(now)
             let differenceString = createDifferenceString(now, timeZonedString, offset)
-            resultString += `${tz}: ${differenceString}`
+            resultString += `${tz}: ${differenceString}\n`
           })
-          
+          promises.push(hipchat.sendMessage(req.clientInfo, req.identity.roomId, resultString))
         })
-        hipchat.sendMessage(req.clientInfo, req.identity.roomId, JSON.stringify(now.format()))
-        .then(function (data) {
-          res.sendStatus(200);
-        });
       })
-      //TODO: Match body.item.message.message to time regex
-      //TODO: get times for configured timezones relative to req.context.user_tz
-      
+        Promise.all(promises).then(()=> {
+          res.sendStatus(200);
+        })
     }
     );
 
