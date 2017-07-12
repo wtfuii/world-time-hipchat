@@ -1,10 +1,11 @@
-{{!< layout}}
-<div class="aui-group">
-  <div class="aui-item">
+{{!< layout}} 
+<form class="aui">
+  <div class="field-group">
+    <label for="timezone-select">Selected timezones</label>
     <select id="timezone-select" multiple="true">
       {{#each timezones}}
       <option value="{{this}}">{{this}}</option>
       {{/each}}
     </select>
   </div>
-</div>
+</form>

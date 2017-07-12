@@ -49,7 +49,7 @@ module.exports = function (app, addon) {
       //   clientKey, oauth info, and HipChat account info
       // * req.context: contains the context data accompanying the request like
       //   the roomId
-      res.render('config', req.context);
+      res.render('config', {context: req.context, timezones: moment.tz.names()});
     }
     );
 
@@ -78,16 +78,20 @@ module.exports = function (app, addon) {
     app.get('/selectedtzs',
     addon.authenticate(),
     function (req, res) {
-      addon.settings.get('world-time-converter', req.clientKey).then((tzs) => {
+      addon.settings.get('world-time-converter', req.clientInfo.clientKey).then((tzs) => {
         res.json(tzs)
       })
     })
 
-    app.get('/selectedtzs',
+    app.post('/selectedtzs',
     addon.authenticate(),
     function (req, res) {
-      addon.settings.set('world-time-converter', req.body, req.clientKey).then(() => {
-        res.sendStatus(200)
+      let timezones = req.body['tzs[]'];
+      if (!(timezones instanceof Array)) {
+        timezones = [timezones]
+      }
+      addon.settings.set('world-time-converter', JSON.stringify(timezones), req.clientInfo.clientKey).then(() => {
+        res.json({status: "ok"})
       })
     })
 
@@ -103,21 +107,21 @@ module.exports = function (app, addon) {
       const promises = []
       results.map((result, index) => {
         //const tzs = moment.tz.names();
-        const resultString = ''
+        let resultString = ''
         const splittedResult = result.split(':')
-        const now = moment().tz(req.context.user_tz).hour(splittedResult[0]).minute(splittedResult[1]);
-        addon.settings.get('world-time-converter', req.clientKey).then((selectedTzsString) => {
-          const selecteTzs = JSON.parse(selectedTzsString);
-          if (!selecteTzs) {
+        const now = moment.tz(moment(), req.context.user_tz).hour(splittedResult[0]).minute(splittedResult[1]);
+        const nowOffset = moment.tz.zone(req.context.user_tz).offset(now)
+        addon.settings.get('world-time-converter', req.clientInfo.clientKey).then((selectedTzs) => {
+          if (!selectedTzs) {
             return
           }
-          selecteTzs.map((tz, tzIndex) => {
+          selectedTzs.map((tz, tzIndex) => {
             if (tz === req.context.user_tz) {
               return
             }
             const offset = moment.tz.zone(tz).offset(now)
-            let differenceString = createDifferenceString(now, timeZonedString, offset)
-            resultString += `${tz}: ${differenceString}\n`
+            let differenceString = createDifferenceString(now, nowOffset - offset)
+            resultString += `${tz}: ${differenceString}<br>`
           })
           promises.push(hipchat.sendMessage(req.clientInfo, req.identity.roomId, resultString))
         })
@@ -141,9 +145,9 @@ module.exports = function (app, addon) {
       result += timeZoned.format('HH:mm')
       const offsetInHours = offset / 60
       if (offsetInHours >= 0) {
-        result += `(+${offsetInHours} h)`
+        result += ` (+${offsetInHours} h)`
       } else {
-        result += `(${offsetInHours} h)`
+        result += ` (${offsetInHours} h)`
       }
       return result;
     }
