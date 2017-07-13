@@ -6,7 +6,7 @@
         // need to use a local tunnel tool (we highly recommend https://ngrok.com)
         // to make your local add-on server accessible from the internet. You'll also
         // need to specify this property with the base URL of your tunnel:
-         "localBaseUrl": "https://15ddd7d8.ngrok.io",
+         "localBaseUrl": "https://8630fd59.ngrok.io",
         // HipChat add-ons don't use asymmetric key algos
         "usePublicKey": false,
         // HipChat add-ons don't support auto registration with HipChat.com so
@@ -85,7 +85,7 @@
         // that to be honored here.
         "port": "$PORT",
         // This is the public URL to your production add-on.
-        "localBaseUrl": "https://your-subdomain.herokuapp.com",
+        "localBaseUrl": "https://world-time-hipchat.herokuapp.com",
         "store": {
             // Let's use Redis as our default data store in prod
             "adapter": "redis",
@@ -96,7 +96,7 @@
         // Make sure that your add-on can only be registered by the hosts on
         // these domains.
         "whitelist": [
-            "*.hipchat.com"
+            "*"
         ]
     },
     "product": "hipchat"

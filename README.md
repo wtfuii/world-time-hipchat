@@ -1,34 +1,11 @@
-# Atlassian Add-on using Express
+# World Time Converter for HipChat
 
-Congratulations! You've successfully created a HipChat Connect Add-on using the Express web application framework.
+This is a Hipchat integration, which sends a message to a room once he notices a message in the format of *hh:mm*. It
+will convert the input time into specific timezone formats, displaying the offset from the user timezone.
+The target timezones are configurable trough the integration config.
 
-## Running your add-on
+## Usage
 
-Install your dependencies.
-```
-npm install
-```
+To install the integration, use the URL `https://world-time-hipchat.herokuapp.com` as addon descriptor in your HipChat instance. The integration is currently not available through the Atlassian store.
 
-On a separate terminal, start up an ngrok tunnel to port 3000.
-
-```
-ngrok http 3000 # if you've got ngrok installed globally
-
-or
-
-./node_modules/ngrok/bin/ngrok http 3000 # local dependency
-```
-
-Copy the __https__ forwarding URL. e.g. https://cace28ac.ngrok.io
-
-```
-AC_LOCAL_BASE_URL=https://cace28ac.ngrok.io node app.js
-```
-
-Your add-on should now be running on localhost:3000 and forwarded to the ngrok https URL.
-
-Use the ngrok https URL to install the add-on to a HipChat room.
-
-## What's next?
-* [Read the HipChat Connect guides](https://developer.atlassian.com/hipchat/guide)
-* [View the HipChat API reference](https://www.hipchat.com/docs/apiv2)
+[Example](example.png)
