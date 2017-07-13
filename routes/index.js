@@ -77,6 +77,9 @@ module.exports = function (app, addon) {
           if (!selectedTzs) {
             return
           }
+          if (typeof selectedTzs === 'string') {
+            selectedTzs = JSON.parse(selectedTzs)
+          }
           selectedTzs.map((tz, tzIndex) => {
             if (tz === req.context.user_tz) {
               return
