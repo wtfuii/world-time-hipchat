@@ -14,7 +14,9 @@ $(document).ready(function () {
           dataType: 'json',
           success: function (res) {
             if (res instanceof String) {
+              console.log("res is string")
               res = JSON.parse(res)
+              console.log(res)
             }
             jq_timezoneselect.val(res).trigger('change')
           },
