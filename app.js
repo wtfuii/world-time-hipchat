@@ -22,7 +22,7 @@ var path = require('path');
 var os = require('os');
 
 // Uncomment this if you're using redis as your store.
-// ac.store.register('redis', require('atlassian-connect-express-redis'));
+ac.store.register('redis', require('atlassian-connect-express-redis'));
 
 // Anything in ./public is served up as static content
 var staticDir = path.join(__dirname, 'public');

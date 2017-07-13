@@ -15,7 +15,6 @@
     "errorhandler": "^1.4.3",
     "express": "^4.14.0",
     "express-hbs": "^1.0.1",
-    "jugglingdb-redis-hq": "^0.1.4",
     "lodash": "^4.13.1",
     "moment-timezone": "^0.5.13",
     "morgan": "^1.7.0",
