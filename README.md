@@ -8,4 +8,4 @@ The target timezones are configurable trough the integration config.
 
 To install the integration, use the URL `https://world-time-hipchat.herokuapp.com` as addon descriptor in your HipChat instance. The integration is currently not available through the Atlassian store.
 
-[Example](example.png)
+![Example](example.png)
