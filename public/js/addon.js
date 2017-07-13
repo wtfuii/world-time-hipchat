@@ -13,6 +13,7 @@ $(document).ready(function () {
           headers: { 'Authorization': 'JWT ' + token },
           dataType: 'json',
           success: function (res) {
+            console.log(res)
             if (res instanceof String) {
               console.log("res is string")
               res = JSON.parse(res)
