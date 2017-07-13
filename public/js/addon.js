@@ -13,11 +13,9 @@ $(document).ready(function () {
           headers: { 'Authorization': 'JWT ' + token },
           dataType: 'json',
           success: function (res) {
-            console.log(res)
-            if (res instanceof String) {
-              console.log("res is string")
+
+            if (typeof res === 'string') {
               res = JSON.parse(res)
-              console.log(res)
             }
             jq_timezoneselect.val(res).trigger('change')
           },
