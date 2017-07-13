@@ -1,6 +1,6 @@
 # World Time Converter for HipChat
 
-This is a Hipchat integration, which sends a message to a room once he notices a message in the format of *hh:mm*. It
+This is a Hipchat integration, which sends a message to a room once a message in the format of *hh:mm* gets sent to the room. It
 will convert the input time into specific timezone formats, displaying the offset from the user timezone.
 The target timezones are configurable trough the integration config.
 
